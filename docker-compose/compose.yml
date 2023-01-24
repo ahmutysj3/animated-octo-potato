@@ -1,0 +1,71 @@
+version: "2.1"
+services:
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    network_mode: host
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - VERSION=docker
+      - PLEX_CLAIM=claim-tzUajccovMSrLMGxkJsz
+    volumes:
+      - /home/plex/config:/config
+      - /home/plex/tv:/tv
+      - /home/plex/movies:/movies
+    restart: unless-stopped 
+    
+  heimdall:
+    image: lscr.io/linuxserver/heimdall:latest
+    container_name: heimdall
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /home/heimdall/config:/config
+    ports:
+      - 80:80
+      - 443:443
+    restart: unless-stopped
+    
+  watchtower:
+    image: v2tec/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/.docker/config.json:/config.json
+    command: --interval 30
+    
+  homeassistant:
+    container_name: homeassistant
+    image: "ghcr.io/home-assistant/home-assistant:stable"
+    volumes:
+      - /home/homeassistant/config:/config
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
+    privileged: true
+    network_mode: host
+    
+  db:
+    image: mysql:5.7
+    restart: always
+    container_name: mysql
+    environment:
+      MYSQL_DATABASE: 'vault_db'
+      # So you don't have to use root, but you can if you like
+      MYSQL_USER: 'trace'
+      # You can use whatever password you like
+      MYSQL_PASSWORD: 'trace'
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: 'trace'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - /home/mysql/vault_db:/var/lib/mysql
+
+    
+
+   
