@@ -1,14 +1,17 @@
 storage "mysql" {
-    address  = "10.0.0.6:3306"
-    username = "trace"
-    password = "trace"
+    username = "vault"
+    password = "vault-secret-key"
     database = "vault_db"
-    }
+    address  = "10.0.0.14:3306"
+}
+
+
 
 listener "tcp" {
-    address     = "0.0.0.0:8200"
-    tls_cert_file = "/home/trace/vault/vault.crt"
-    tls_key_file  = "/home/trace/vault/vault.key"
+    address     = "vault.tracecloud.click:8200"
+    tls_cert_file = "/opt/vault/tls/vault.crt"
+    tls_key_file  = "/opt/vault/tls/vault.key"
+
 }
 
 api_addr = "https://vault.tracecloud.click:8200"
